@@ -1,0 +1,23 @@
+{
+  "name": "pyradux",
+  "version": "1.0.0",
+  "description": "Composable Redux state for React",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaptree/pyradux.git"
+  },
+  "keywords": [
+    "redux",
+    "react"
+  ],
+  "author": "jumaru",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zaptree/pyradux/issues"
+  },
+  "homepage": "https://github.com/zaptree/pyradux#readme"
+}
