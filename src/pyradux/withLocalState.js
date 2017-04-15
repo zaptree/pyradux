@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Provider from './Provider';
+import PropTypes from 'prop-types';
 
 export default function withLocalState({createStore, ...options}, WrappedComponent) {
   class WithLocalStateComponent extends Component {
@@ -24,7 +25,7 @@ export default function withLocalState({createStore, ...options}, WrappedCompone
     }
   }
   WithLocalStateComponent.contextTypes = {
-    createStore: React.PropTypes.func
+    createStore: PropTypes.func
   };
   return WithLocalStateComponent
 }
