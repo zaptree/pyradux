@@ -2,7 +2,8 @@ import React, { Component, Children } from 'react';
 import PropTypes from 'prop-types';
 
 class HierarchicalStore{
-  constructor(store, parent){
+  constructor(store, parent, storeContext){
+    this.storeContext = storeContext;
     // todo: use map instead and use store as key for faster removal?
     this.parent = parent;
     if(parent){
@@ -47,11 +48,20 @@ class HierarchicalStore{
     if(options && options.global && this.parent){
       return this.parent.dispatch(action, options);
     }
-    // call dispatch on our redux store but also call dispatch on our children
-    // this cascades dispatches down the component tree
-    this.store.dispatch(action);
+    const storeContext = options && options.storeContext;
+    // storeContext allows parent components to dispatch more targeted actions
+    if(!storeContext || storeContext===this.storeContext){
+      this.store.dispatch(action);
+    }
     this.children.forEach(childStore=>{
-      childStore.dispatch(action);
+      // we don't want to pass down the global option since it will just cause an infinite loop
+      let options;
+      if(storeContext){
+        options = {
+          storeContext
+        };
+      }
+      childStore.dispatch(action, options);
     });
   }
   subscribe(listener){
@@ -112,7 +122,7 @@ export default class Provider extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.store = new HierarchicalStore(props.store, context && context.store);
+    this.store = new HierarchicalStore(props.store, context && context.store, props.storeContext);
     this.createStore = this.props.createStore;
 
   }

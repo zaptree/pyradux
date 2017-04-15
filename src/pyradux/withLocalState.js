@@ -18,7 +18,7 @@ export default function withLocalState({createStore, ...options}, WrappedCompone
     }
     render() {
       return (
-        <Provider store={this.store} createStore={this.createStore}>
+        <Provider store={this.store} createStore={this.createStore} storeContext={this.props.storeContext}>
           <WrappedComponent {...this.props} />
         </Provider>
       );

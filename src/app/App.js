@@ -4,18 +4,23 @@ import {connect} from 'react-redux';
 import Tile from './Tile';
 
 class App extends React.Component{
-  changeChildState(){
+  changeChildState(storeContext){
     this.props.dispatch({
       type: 'SET_TITLE',
       value: ''
-    })
+    }, {storeContext})
   }
   render(){
     const { username } = this.props;
     return (
       <div>
         <h1>Hello {username}</h1>
-        <button onClick={()=>{this.changeChildState()}}>Change Child State (Clears values)</button>
+        <p>
+          <button onClick={()=>{this.changeChildState('tileOne')}}>Change specific Child State (Clears value)</button>
+        </p>
+        <p>
+          <button onClick={()=>{this.changeChildState()}}>Change Child State (Clears values)</button>
+        </p>
         <p>
           Note that clicking above button will not cause mapStateToProps to fire on <strong>App.js</strong> since it's
           state did not change. The two <strong>Tile.js</strong> instances though will trigger mapStateToProps since their state changed.
@@ -23,10 +28,10 @@ class App extends React.Component{
           state changes
         </p>
         <div className="content">
-          <Tile type="restaurant"/>
+          <Tile type="restaurant" storeContext="tileOne"/>
         </div>
         <div className="sidebar">
-          <Tile type="restaurant"/>
+          <Tile type="restaurant" storeContext="tileTwo"/>
         </div>
       </div>
     )
