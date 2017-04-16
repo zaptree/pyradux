@@ -33,6 +33,9 @@ class App extends React.Component{
         <div className="sidebar">
           <Tile type="restaurant" storeContext="tileTwo"/>
         </div>
+        <div className="sidebar">
+          <Tile type="synced" storeContext="tileTwo"/>
+        </div>
       </div>
     )
   }

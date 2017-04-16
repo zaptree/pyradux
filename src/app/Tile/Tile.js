@@ -14,20 +14,25 @@ class App extends React.Component{
     this.props.dispatch(action, {global: true})
   }
   changeTitle(value){
+    const { type } = this.props;
+
     // If you set the global option to true on the dispatch it will make it so that
     // all instances of Tile
     this.props.dispatch({
       type: 'SET_TITLE',
       value
-    }, {global: false});
+    }, {global: type === 'synced'});
   }
   render(){
-    const { username, title } = this.props;
+    const { username, title, type } = this.props;
     return (
       <div>
         <h3>This is a tile {username}</h3>
         <p>
           <button onClick={()=>{this.changeUserName()}}>Change Parent State</button>
+        </p>
+        <p>
+          {type==='synced' && 'changes here will cause all inputs to change'}
         </p>
         <div>
           <input type="text" value={title} onChange={e=>this.changeTitle(e.target.value)}/>
@@ -37,9 +42,10 @@ class App extends React.Component{
   }
 }
 
-const mapStateToProps = (state)=>{
+const mapStateToProps = (state, ownProps)=>{
   const { users, tile } = state;
   return {
+    type: ownProps.type,
     username: users.username,
     title: tile.title,
   }
