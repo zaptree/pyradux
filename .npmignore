@@ -1,8 +1,13 @@
+# npm publish specific files/folders
+src
+test
+.babelrc
+.editorconfig
+.gitignore
+webpack.config.js
+
 # IDE files
 .idea
-
-# build files
-dist
 
 # temp files
 tmp
