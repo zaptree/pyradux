@@ -2,7 +2,7 @@
 .idea
 
 # build files
-dist
+lib
 
 # temp files
 tmp
