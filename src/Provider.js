@@ -65,7 +65,6 @@ class HierarchicalStore{
     });
   }
   subscribe(listener){
-    // todo: implement this, it should return an unsubscribe method
     if (typeof listener !== 'function') {
       throw new Error('Expected listener to be a function.')
     }
