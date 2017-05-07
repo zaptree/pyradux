@@ -1,9 +1,7 @@
-import React, { Component, Children } from 'react';
-import PropTypes from 'prop-types';
 
-class HierarchicalStore{
-  isHierarchical = true;
-  constructor(store, parent, storeContext){
+const HierarchicalStore = {
+  isHierarchical: true,
+  initialize: function(store, parent, storeContext){
     this.storeContext = storeContext;
     // todo: use map instead and use store as key for faster removal?
     this.parent = parent;
@@ -24,19 +22,19 @@ class HierarchicalStore{
     });
     // initialize the state
     this.setState();
-  }
-  addChild(store){
+  },
+  addChild: function(store){
     this.children = this.children.concat(store);
-  }
-  trigger(){
+  },
+  trigger: function(){
     this.listeners.forEach(listener=> {
       listener();
     });
     this.children.forEach(childState=> childState.trigger());
-  }
-  removeChild(store){
+  },
+  removeChild: function(store){
     this.children = this.children.filter(item=> item !== store);
-  }
+  },
 
   /**
    * method to dispatch actions
@@ -44,7 +42,7 @@ class HierarchicalStore{
    * @param {object} [options] - extra options
    * @param {boolean} [options.global] - flag for making dispatch global
    */
-  dispatch(action, options){
+  dispatch: function(action, options){
     // if the global flag was passed into the action that means we want the root store to dispatch
     if(((options && options.global) || action.$global) && this.parent){
       return this.parent.dispatch(action, options);
@@ -64,8 +62,8 @@ class HierarchicalStore{
       }
       childStore.dispatch(action, options);
     });
-  }
-  subscribe(listener){
+  },
+  subscribe: function(listener){
     if (typeof listener !== 'function') {
       throw new Error('Expected listener to be a function.')
     }
@@ -75,8 +73,8 @@ class HierarchicalStore{
     return ()=> {
       this.listeners = this.listeners.filter(item=> item !== listener);
     };
-  }
-  setState(){
+  },
+  setState: function(){
     console.info('--------------------SET STATE WAS RUN----------------------------');
     const localState = this.store.getState();
 
@@ -104,11 +102,11 @@ class HierarchicalStore{
       childStore.setState();
     });
 
-  }
-  getState(){
+  },
+  getState: function(){
     return this.state;
-  }
-  close(){
+  },
+  close: function(){
     this.children = null;
     this.listeners = null;
     this.unsubscribe();
@@ -116,6 +114,14 @@ class HierarchicalStore{
       this.parent.removeChild(this);
     }
   }
+};
+
+function createHierarchicalStore(store, parent, storeContext){
+
+  const hierarchicalStore = Object.assign({}, HierarchicalStore);
+  hierarchicalStore.initialize(store, parent, storeContext);
+
+  return hierarchicalStore;
 }
 
-export default HierarchicalStore;
+export default createHierarchicalStore;

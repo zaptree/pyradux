@@ -1,5 +1,5 @@
 import { compose } from 'redux';
-import HierarchicalStore from './HierarchicalStore';
+import createHierarchicalStore from './HierarchicalStore';
 
 export default function createApplyMiddleware(parentStore, storeContext){
 
@@ -12,7 +12,7 @@ export default function createApplyMiddleware(parentStore, storeContext){
   return function applyMiddleware(...middlewares) {
     return (createStore) => (reducer, preloadedState, enhancer) => {
       const _store = createStore(reducer, preloadedState, enhancer);
-      const store = new HierarchicalStore(_store, parentStore, storeContext);
+      const store = createHierarchicalStore(_store, parentStore, storeContext);
       let dispatch = store.dispatch;
 
       const middlewareAPI = {

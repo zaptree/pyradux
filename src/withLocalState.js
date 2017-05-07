@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Provider from './Provider';
 import PropTypes from 'prop-types';
-import HierarchicalStore from './HierarchicalStore';
+import createHierarchicalStore from './HierarchicalStore';
 import createApplyMiddleware from './createApplyMiddleware'
 
 export default function withLocalState({createStore, ...options}, WrappedComponent) {
@@ -23,7 +23,7 @@ export default function withLocalState({createStore, ...options}, WrappedCompone
 
       // if createStore does not use the applyMiddleware passed in the we create the hierarchical store here
       if(!this.store.isHierarchical){
-        this.store = new HierarchicalStore(this.store, context && context.store, props.storeContext);
+        this.store = createHierarchicalStore(this.store, context && context.store, props.storeContext);
       }
 
 
