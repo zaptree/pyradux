@@ -22,10 +22,8 @@ export default function createApplyMiddleware(parentStore, storeContext){
       const chain = middlewares.map(middleware => middleware(middlewareAPI));
       dispatch = compose(...chain)(store.dispatch);
       // store.dispatch = dispatch;
-      return {
-        ...store,
-        dispatch
-      }
+      store.dispatch = dispatch;
+      return store;
     }
   };
 }
