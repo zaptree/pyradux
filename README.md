@@ -241,6 +241,13 @@ dispatch({
   type: 'MY_ACTION_TYPE',
   payload: {}
 }, {global: true})
+
+// or the alterante syntax is 
+dispatch({
+  $global: true,
+  type: 'MY_ACTION_TYPE',
+  payload: {}
+});
 ```
 
 

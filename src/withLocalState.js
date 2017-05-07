@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Provider from './Provider';
 import PropTypes from 'prop-types';
+import HierarchicalStore from './HierarchicalStore';
+import createApplyMiddleware from './createApplyMiddleware'
 
 export default function withLocalState({createStore, ...options}, WrappedComponent) {
   class WithLocalStateComponent extends Component {
@@ -13,7 +15,19 @@ export default function withLocalState({createStore, ...options}, WrappedCompone
       if(!options.reducer){
         throw new Error('withLocalState expects the reducer property to be set');
       }
-      this.store = this.createStore(options);
+
+      this.store = this.createStore({
+        ...options,
+        applyMiddleware: createApplyMiddleware(context && context.store, props.storeContext)
+      });
+
+      // if createStore does not use the applyMiddleware passed in the we create the hierarchical store here
+      if(!this.store.isHierarchical){
+        this.store = new HierarchicalStore(this.store, context && context.store, props.storeContext);
+      }
+
+
+      // this.store = this.createStore(options);
 
     }
     render() {
@@ -25,6 +39,7 @@ export default function withLocalState({createStore, ...options}, WrappedCompone
     }
   }
   WithLocalStateComponent.contextTypes = {
+    store: PropTypes.object,
     createStore: PropTypes.func
   };
   return WithLocalStateComponent
