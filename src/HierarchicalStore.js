@@ -54,15 +54,25 @@ class HierarchicalStore{
     if(!storeContext || storeContext===this.storeContext){
       this.store.dispatch(action);
     }
-    this.children.forEach(childStore=>{
+    let childOptions = options;
+    let childAction = action;
+    if(this.children.length){
       // we don't want to pass down the global option since it will just cause an infinite loop
-      let options;
       if(storeContext){
-        options = {
+        childOptions = {
           storeContext
         };
       }
-      childStore.dispatch(action, options);
+      if(action.$global){
+        childAction = {
+          ...action,
+          $global: undefined
+        }
+      }
+    }
+    this.children.forEach(childStore=>{
+
+      childStore.dispatch(childAction, childOptions);
     });
   }
   subscribe(listener){
