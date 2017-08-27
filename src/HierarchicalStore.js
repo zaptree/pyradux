@@ -35,7 +35,9 @@ class HierarchicalStore{
     this.children.forEach(childState=> childState.trigger());
   }
   removeChild(store){
-    this.children = this.children.filter(item=> item !== store);
+    if(this.children){
+      this.children = this.children.filter(item=> item !== store);
+    }
   }
 
   /**
@@ -83,7 +85,9 @@ class HierarchicalStore{
     this.listeners = this.listeners.concat(listener);
 
     return ()=> {
-      this.listeners = this.listeners.filter(item=> item !== listener);
+      if(this.listeners){
+        this.listeners = this.listeners.filter(item=> item !== listener);
+      }
     };
   }
   setState(){

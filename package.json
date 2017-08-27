@@ -1,10 +1,10 @@
 {
   "name": "pyradux",
-  "version": "0.1.7",
+  "version": "0.1.11",
   "description": "Composable Redux state for React",
   "main": "lib/index.js",
   "scripts": {
-    "build": "rimraf lib/* && cross-env NODE_ENV=production babel src -d lib  --source-maps",
+    "build": "rimraf lib/* && cross-env NODE_ENV=production babel src -d lib  --source-maps inline",
     "test": "cross-env NODE_ENV=test istanbul cover node_modules/mocha/bin/_mocha -- --compilers js:babel-core/register test/**/*.test.js",
     "lint": "eslint src/**/*.js",
     "lint-fix": "eslint --fix src/**/*.js"
