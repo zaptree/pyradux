@@ -47,6 +47,10 @@ class HierarchicalStore{
    * @param {boolean} [options.global] - flag for making dispatch global
    */
   dispatch(action, options){
+    // if some async action is calling dispatch but the Hierarchical store is closed
+    if(this.closed){
+      return;
+    }
     // if the global flag was passed into the action that means we want the root store to dispatch
     if(((options && options.global) || action.$global) && this.parent){
       return this.parent.dispatch(action, options);
@@ -91,7 +95,7 @@ class HierarchicalStore{
     };
   }
   setState(){
-    console.info('--------------------SET STATE WAS RUN----------------------------');
+    // console.info('--------------------SET STATE WAS RUN----------------------------');
     const localState = this.store.getState();
 
     if(!this.parent){
@@ -104,7 +108,7 @@ class HierarchicalStore{
       // Now that we stop subscribe from firing setState if there was no change in state
       // this check probably pointless
       if(parentState !== this.parentState || localState !== this.localState){
-        console.info('--------------------MERGING STATE----------------------------');
+        // console.info('--------------------MERGING STATE----------------------------');
         this.state = {
           ...parentState,
           ...localState
@@ -123,6 +127,7 @@ class HierarchicalStore{
     return this.state;
   }
   close(){
+    this.closed = true;
     this.children = null;
     this.listeners = null;
     this.unsubscribe();
