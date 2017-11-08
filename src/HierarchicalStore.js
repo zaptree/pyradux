@@ -13,6 +13,7 @@ class HierarchicalStore{
     this.store = store;
     this.children = [];
     this.listeners = [];
+    this.eventListeners = {};
     this.dispatch = this.dispatch.bind(this);
     this.getState = this.getState.bind(this);
     this.unsubscribe = this.store.subscribe(()=>{
@@ -39,47 +40,58 @@ class HierarchicalStore{
       this.children = this.children.filter(item=> item !== store);
     }
   }
+  getFullState(){
+    // TODO: implement getting the state including all children getFullState methods and merging
+  }
+  triggerEventListeners(eventName, data){
+    if(this.eventListeners[eventName]){
+      this.eventListeners[eventName].callbacks.forEach(callback=>callback(data));
+    }
+  }
+  onEvent(eventName, callback){
+    if(!this.eventListeners[eventName]){
+      this.eventListeners[eventName] = {
+        callbacks: [],
+      };
+    }
+    this.eventListeners[eventName].callbacks.push(callback);
+  }
 
   /**
    * method to dispatch actions
    * @param {object} action - action
-   * @param {object} [options] - extra options
-   * @param {boolean} [options.global] - flag for making dispatch global
    */
-  dispatch(action, options){
+  dispatch(action){
     // if some async action is calling dispatch but the Hierarchical store is closed
     if(this.closed){
       return;
     }
     // if the global flag was passed into the action that means we want the root store to dispatch
-    if(((options && options.global) || action.$global) && this.parent){
-      return this.parent.dispatch(action, options);
+    if(action.$global && this.parent){
+      return this.parent.dispatch(action);
     }
-    const storeContext = options && options.storeContext;
+    const storeContext = action.$storeContext;
     // storeContext allows parent components to dispatch more targeted actions
     if(!storeContext || storeContext===this.storeContext){
       this.store.dispatch(action);
     }
-    let childOptions = options;
     let childAction = action;
     if(this.children.length){
-      // we don't want to pass down the global option since it will just cause an infinite loop
-      if(storeContext){
-        childOptions = {
-          storeContext
-        };
-      }
+      childAction = {
+        ...action,
+        $dispatchFromParent: true,
+      };
       if(action.$global){
-        childAction = {
-          ...action,
-          $global: undefined
-        }
+        childAction.$global = undefined;
       }
     }
     this.children.forEach(childStore=>{
 
-      childStore.dispatch(childAction, childOptions);
+      childStore.dispatch(childAction);
     });
+    if(!action.$dispatchFromParent){
+      this.triggerEventListeners('rootDispatch', action);
+    }
   }
   subscribe(listener){
     if (typeof listener !== 'function') {
@@ -130,6 +142,7 @@ class HierarchicalStore{
     this.closed = true;
     this.children = null;
     this.listeners = null;
+    this.eventListeners = null;
     this.unsubscribe();
     if(this.parent){
       this.parent.removeChild(this);
