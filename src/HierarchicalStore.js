@@ -16,6 +16,7 @@ class HierarchicalStore{
     this.eventListeners = {};
     this.dispatch = this.dispatch.bind(this);
     this.getState = this.getState.bind(this);
+    this.getFullState = this.getFullState.bind(this);
     this.unsubscribe = this.store.subscribe(()=>{
       // improve performance by not running anything if state did not change
       if(this.store.getState() !== this.localState){
@@ -40,8 +41,19 @@ class HierarchicalStore{
       this.children = this.children.filter(item=> item !== store);
     }
   }
-  getFullState(){
+  getFullState(fromParent){
     // TODO: implement getting the state including all children getFullState methods and merging
+
+    if(!fromParent && this.parent){
+      return this.parent.getFullState();
+    }
+    return {
+      ...this.localState,
+      $children: this.children.map(child=>{
+        return child.getFullState(true);
+      }),
+    };
+
   }
   triggerEventListeners(eventName, data){
     if(this.eventListeners[eventName]){
