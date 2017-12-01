@@ -78,6 +78,7 @@ class HierarchicalStore{
     if(this.closed){
       return;
     }
+    // todo: if going to fix $global need to also change in createApplyMiddleware
     // if the global flag was passed into the action that means we want the root store to dispatch
     if(action.$global && this.parent){
       return this.parent.dispatch(action);

@@ -22,7 +22,20 @@ export default function createApplyMiddleware(parentStore, storeContext){
       const chain = middlewares.map(middleware => middleware(middlewareAPI));
       dispatch = compose(...chain)(store.dispatch);
       // store.dispatch = dispatch;
-      store.dispatch = dispatch;
+      store.dispatch = (action)=>{
+        // todo: move this in the hierarchical store (NOT in the dispatch method that would not work)
+        // when using global the middleware would fire twice while going up the tree and then back down
+        // this code makes sure that we start with the root component
+        if(action.$global && store.parent){
+          let root = store.parent;
+          while(root.parent){
+            root = root.parent;
+          }
+          root.dispatch(action);
+        }else {
+          dispatch(action);
+        }
+      };
       return store;
     }
   };
